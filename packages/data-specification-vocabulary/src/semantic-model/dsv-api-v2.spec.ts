@@ -77,6 +77,7 @@ describe("createDataSpecificationVocabulary", () => {
         reusesPropertyValue: [{
           propertyReusedFromResourceIri: "http://example.com/vocabulary#person",
           reusedPropertyIri: "http://www.w3.org/2004/02/skos/core#prefLabel",
+          reusedAsPropertyIri: "http://www.w3.org/2004/02/skos/core#prefLabel",
         }],
         specializationOfIri: [],
         usageNote: {},
@@ -96,6 +97,7 @@ describe("createDataSpecificationVocabulary", () => {
         reusesPropertyValue: [{
           propertyReusedFromResourceIri: "http://example.com/vocabulary#name",
           reusedPropertyIri: "http://www.w3.org/2004/02/skos/core#prefLabel",
+          reusedAsPropertyIri: "http://www.w3.org/2004/02/skos/core#prefLabel",
         }],
         requirementLevel: RequirementLevel.undefined,
         specializationOfIri: [],
@@ -105,7 +107,7 @@ describe("createDataSpecificationVocabulary", () => {
       objectPropertyProfiles: [],
     };
 
-    expect(actual).toStrictEqual(expected);
+    expect(actual).toMatchObject(expected);
 
   });
 

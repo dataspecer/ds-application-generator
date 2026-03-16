@@ -59,6 +59,7 @@ export const DSV = {
   "reusesPropertyValue": IRI(DSV_PREFIX + "reusesPropertyValue"),
   "PropertyValueReuse": IRI(DSV_PREFIX + "PropertyValueReuse"),
   "reusedProperty": IRI(DSV_PREFIX + "reusedProperty"),
+  "reusedAsProperty": IRI(DSV_PREFIX + "reusedAsProperty"),
   "reusedFromResource": IRI(DSV_PREFIX + "reusedFromResource"),
   "ManyToMany": IRI(DSV_PREFIX + "nn"),
   "ManyToOne": IRI(DSV_PREFIX + "n1"),

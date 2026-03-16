@@ -109,6 +109,11 @@ export interface PropertyValueReuse {
   reusedPropertyIri: string;
 
   /**
+   * @lc-property dsv:reusedAsProperty
+   */
+  reusedAsPropertyIri: string;
+
+  /**
    * @lc-property dsv:reusedFromResource
    */
   propertyReusedFromResourceIri: string;

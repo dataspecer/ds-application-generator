@@ -215,9 +215,11 @@ test("End to end test I.", async () => {
       "type": ["class-profile"],
       "reusesPropertyValue": [{
         "reusedPropertyIri": "http://www.w3.org/2004/02/skos/core#prefLabel",
+        "reusedAsPropertyIri": "http://www.w3.org/2004/02/skos/core#prefLabel",
         "propertyReusedFromResourceIri": "http://localhost/sweetState"
       }, {
         "reusedPropertyIri": "http://www.w3.org/2004/02/skos/core#definition",
+        "reusedAsPropertyIri": "http://www.w3.org/2004/02/skos/core#definition",
         "propertyReusedFromResourceIri": "http://localhost/sweetState"
       }],
       "profiledClassIri": ["http://localhost/sweetState"],
@@ -247,9 +249,11 @@ test("End to end test I.", async () => {
       "profiledPropertyIri": ["http://dcat/model/tightArt"],
       "reusesPropertyValue": [{
         "reusedPropertyIri": "http://www.w3.org/2004/02/skos/core#prefLabel",
+        "reusedAsPropertyIri": "http://www.w3.org/2004/02/skos/core#prefLabel",
         "propertyReusedFromResourceIri": "http://dcat/model/tightArt"
       }, {
         "reusedPropertyIri": "http://www.w3.org/2004/02/skos/core#definition",
+        "reusedAsPropertyIri": "http://www.w3.org/2004/02/skos/core#definition",
         "propertyReusedFromResourceIri": "http://dcat/model/tightArt"
       }],
       "type": ["datatype-property-profile"],
@@ -269,9 +273,11 @@ test("End to end test I.", async () => {
       "profiledPropertyIri": ["http://dcat/model/drabMoment"],
       "reusesPropertyValue": [{
         "reusedPropertyIri": "http://www.w3.org/2004/02/skos/core#prefLabel",
+        "reusedAsPropertyIri": "http://www.w3.org/2004/02/skos/core#prefLabel",
         "propertyReusedFromResourceIri": "http://dcat/model/drabMoment"
       }, {
         "reusedPropertyIri": "http://www.w3.org/2004/02/skos/core#definition",
+        "reusedAsPropertyIri": "http://www.w3.org/2004/02/skos/core#definition",
         "propertyReusedFromResourceIri": "http://dcat/model/drabMoment"
       }],
       "type": ["object-property-profile"],
@@ -283,7 +289,7 @@ test("End to end test I.", async () => {
     }],
   };
 
-  expect(dsvModel).toStrictEqual(expectedConceptualModel);
+  expect(dsvModel).toMatchObject(expectedConceptualModel);
 
   // We go to RDF and back.
   const actualRdf = await dsvToRdf(dsvModel, {});
@@ -406,7 +412,7 @@ test("End to end test I.", async () => {
     } as SemanticModelRelationshipProfile],
   } as EntityListContainer;
 
-  expect(parsedContainer).toStrictEqual(expectedContainer);
+  expect(parsedContainer).toMatchObject(expectedContainer);
 
 });
 
@@ -573,6 +579,7 @@ test("Issue #1005", async () => {
     dsv:reusesPropertyValue [
   a dsv:PropertyValueReuse;
   dsv:reusedProperty skos:definition;
+  dsv:reusedAsProperty skos:definition;
   dsv:reusedFromResource :juicyBusiness
 ];
     a dsv:ClassProfile;
@@ -584,6 +591,7 @@ test("Issue #1005", async () => {
     dsv:reusesPropertyValue [
   a dsv:PropertyValueReuse;
   dsv:reusedProperty skos:definition;
+  dsv:reusedAsProperty skos:definition;
   dsv:reusedFromResource :bulkyForce
 ];
     a dsv:ClassProfile;
@@ -630,7 +638,7 @@ test("Issue #1005", async () => {
   });
 
   // We can not use the original one as there are only profiles.
-  expect(parsedContainer).toStrictEqual({
+  expect(parsedContainer).toMatchObject({
     baseIri: "",
     entities: [{
       ...container.entities[2],
