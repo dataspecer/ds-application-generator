@@ -318,20 +318,30 @@ function loadReusesPropertyValue(
 ) {
   const reader = new RdfPropertyReader(context, subject);
   let reusedProperty = reader.iri(DSV.reusedProperty);
+  let reusedAsProperty = reader.iri(DSV.reusedAsProperty);
   // Migration section.
   if (reusedProperty === VANN.usageNote.id) {
     reusedProperty = SKOS.scopeNote.id;
   }
+  if (reusedAsProperty === null) {
+    // For backwards compatibility we will treat missing reusedAsProperty as reuse of the same property.
+    // https://github.com/dataspecer/dataspecer/issues/1238
+    //
+    // todo: Not sure whether this property is actually mandatory in DSV. If not, then this logic should be kept.
+    reusedAsProperty = reusedProperty;
+  }
   const reusedFrom = reader.iri(DSV.reusedFromResource);
-  if (reusedProperty === null || reusedFrom === null) {
+  if (reusedProperty === null || reusedFrom === null || reusedAsProperty === null) {
     console.warn("Invalid dsv:PropertyValueReuse", {
       reusedProperty: reusedProperty,
+      reusedAsProperty: reusedAsProperty,
       reusedFromResource: reusedFrom,
     });
     return;
   }
   profile.reusesPropertyValue.push({
     reusedPropertyIri: reusedProperty,
+    reusedAsPropertyIri: reusedAsProperty,
     propertyReusedFromResourceIri: reusedFrom,
   });
 }

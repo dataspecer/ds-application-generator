@@ -56,8 +56,12 @@ function aggregateSemanticModelRelationshipProfile(
       //
       name: profiled(end.nameFromProfiled)?.ends[index]?.name ?? end.name ?? null,
       nameFromProfiled: end.nameFromProfiled,
+      nameProperty: end.nameProperty ?? null, // do not inherit, this is specific to this profile
+      //
       description: profiled(end.descriptionFromProfiled)?.ends[index]?.description ?? end.description ?? null,
       descriptionFromProfiled: end.descriptionFromProfiled,
+      descriptionProperty: end.descriptionProperty ?? null, // do not inherit, this is specific to this profile
+      //
       usageNote: (() => {
         // We need to do some computation.
         const source = profiled(end.usageNoteFromProfiled);

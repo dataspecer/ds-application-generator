@@ -105,11 +105,19 @@ export interface PropertyValueReuse {
 
   /**
    * @lc-property dsv:reusedProperty
+   * @see {@link https://mff-uk.github.io/data-specification-vocabulary/dsv/#reusedProperty}
    */
   reusedPropertyIri: string;
 
   /**
+   * @lc-property dsv:reusedAsProperty
+   * @see {@link https://mff-uk.github.io/data-specification-vocabulary/dsv/#reusedAsProperty}
+   */
+  reusedAsPropertyIri: string;
+
+  /**
    * @lc-property dsv:reusedFromResource
+   * @see {@link https://mff-uk.github.io/data-specification-vocabulary/dsv/#reusedFromResource}
    */
   propertyReusedFromResourceIri: string;
 

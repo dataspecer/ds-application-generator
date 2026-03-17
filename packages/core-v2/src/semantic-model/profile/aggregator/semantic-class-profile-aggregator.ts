@@ -87,8 +87,11 @@ function aggregateSemanticModelClassProfile(
     //
     name: profiled(profile.nameFromProfiled)?.name ?? profile.name ?? null,
     nameFromProfiled: profile.nameFromProfiled,
+    nameProperty: profile.nameProperty ?? null, // do not inherit, this is specific to this profile
+    //
     description: profiled(profile.descriptionFromProfiled)?.description ?? profile.description ?? null,
     descriptionFromProfiled: profile.descriptionFromProfiled,
+    descriptionProperty: profile.descriptionProperty ?? null, // do not inherit, this is specific to this profile
     //
     conceptIris: Array.from(new Set(conceptIris)),
   } satisfies AggregatedProfiledSemanticModelClass;

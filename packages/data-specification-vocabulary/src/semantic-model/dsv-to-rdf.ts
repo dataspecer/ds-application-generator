@@ -153,6 +153,9 @@ class DsvWriter {
           predicate: DSV.reusedProperty,
           object: IRI(item.reusedPropertyIri),
         }, {
+          predicate: DSV.reusedAsProperty,
+          object: IRI(item.reusedAsPropertyIri),
+        }, {
           predicate: DSV.reusedFromResource,
           object: IRI(item.propertyReusedFromResourceIri)
         }])

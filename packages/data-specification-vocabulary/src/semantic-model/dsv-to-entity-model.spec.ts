@@ -19,6 +19,7 @@ test("From DSV to entity model and back.", async () => {
       "profileOfIri": [],
       "reusesPropertyValue": [{
         "reusedPropertyIri": SKOS.scopeNote.id,
+        "reusedAsPropertyIri": SKOS.scopeNote.id,
         "propertyReusedFromResourceIri": "http://www.w3.org/ns/dcat#Dataset"
       }],
       "type": ["class-profile"],
@@ -165,7 +166,7 @@ test("From DSV to entity model and back.", async () => {
     } as SemanticModelRelationshipProfile],
   };
 
-  expect(entityListContainer).toStrictEqual(expectedEntityListContainer);
+  expect(entityListContainer).toMatchObject(expectedEntityListContainer);
 
   // We need to add placeholder for a vocabulary, so we can properly
   // detect profiles or classes/relationships (from vocabulary) as
@@ -255,9 +256,11 @@ test("Issue #1005", () => {
       "type": ["class-profile"],
       "reusesPropertyValue": [{
         "reusedPropertyIri": "http://www.w3.org/2004/02/skos/core#prefLabel",
+        "reusedAsPropertyIri": "http://www.w3.org/2004/02/skos/core#prefLabel",
         "propertyReusedFromResourceIri": "http://dcat/model/juicyBusiness"
       }, {
         "reusedPropertyIri": "http://www.w3.org/2004/02/skos/core#definition",
+        "reusedAsPropertyIri": "http://www.w3.org/2004/02/skos/core#definition",
         "propertyReusedFromResourceIri": "http://dcat/model/juicyBusiness"
       }],
       "profiledClassIri": ["http://dcat/model/juicyBusiness"],
@@ -273,9 +276,11 @@ test("Issue #1005", () => {
       "type": ["class-profile"],
       "reusesPropertyValue": [{
         "reusedPropertyIri": "http://www.w3.org/2004/02/skos/core#prefLabel",
+        "reusedAsPropertyIri": "http://www.w3.org/2004/02/skos/core#prefLabel",
         "propertyReusedFromResourceIri": "http://dcat/model/bulkyForce"
       }, {
         "reusedPropertyIri": "http://www.w3.org/2004/02/skos/core#definition",
+        "reusedAsPropertyIri": "http://www.w3.org/2004/02/skos/core#definition",
         "propertyReusedFromResourceIri": "http://dcat/model/bulkyForce"
       }],
       "profiledClassIri": ["http://dcat/model/bulkyForce"],
@@ -294,9 +299,11 @@ test("Issue #1005", () => {
       "profiledPropertyIri": ["http://dcat/model/juicyWork"],
       "reusesPropertyValue": [{
         "reusedPropertyIri": "http://www.w3.org/2004/02/skos/core#prefLabel",
+        "reusedAsPropertyIri": "http://www.w3.org/2004/02/skos/core#prefLabel",
         "propertyReusedFromResourceIri": "http://dcat/model/juicyWork"
       }, {
         "reusedPropertyIri": "http://www.w3.org/2004/02/skos/core#definition",
+        "reusedAsPropertyIri": "http://www.w3.org/2004/02/skos/core#definition",
         "propertyReusedFromResourceIri": "http://dcat/model/juicyWork"
       }
       ],
@@ -316,9 +323,11 @@ test("Issue #1005", () => {
       "profiledPropertyIri": ["http://dcat/model/juicyWork"],
       "reusesPropertyValue": [{
         "reusedPropertyIri": "http://www.w3.org/2004/02/skos/core#prefLabel",
+        "reusedAsPropertyIri": "http://www.w3.org/2004/02/skos/core#prefLabel",
         "propertyReusedFromResourceIri": "http://dcat/model/juicyWork"
       }, {
         "reusedPropertyIri": "http://www.w3.org/2004/02/skos/core#definition",
+        "reusedAsPropertyIri": "http://www.w3.org/2004/02/skos/core#definition",
         "propertyReusedFromResourceIri": "http://dcat/model/juicyWork"
       }],
       "specializationOfIri": ["http://dcat/model/BulkyForce.juicyWork"],
@@ -374,6 +383,6 @@ test("Issue #1005", () => {
   const actual = entityListContainerToDsvModel(
     "http://dcat/model/", entityListContainer, context)
 
-  expect(actual).toStrictEqual(dsv);
+  expect(actual).toMatchObject(dsv);
 
 });

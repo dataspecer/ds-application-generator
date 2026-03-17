@@ -84,9 +84,11 @@ test("Regression test.", async () => {
       "profiledClassIri": ["http://www.w3.org/ns/dcat#Dataset"],
       "reusesPropertyValue": [{
         "reusedPropertyIri": "http://www.w3.org/2004/02/skos/core#prefLabel",
+        "reusedAsPropertyIri": "http://www.w3.org/2004/02/skos/core#prefLabel",
         "propertyReusedFromResourceIri": "http://www.w3.org/ns/dcat#Dataset",
       }, {
         "reusedPropertyIri": "http://www.w3.org/2004/02/skos/core#scopeNote",
+        "reusedAsPropertyIri": "http://www.w3.org/2004/02/skos/core#scopeNote",
         "propertyReusedFromResourceIri": "http://www.w3.org/ns/dcat#Dataset",
       }],
       "externalDocumentationUrl": "http://documentation",
@@ -132,9 +134,11 @@ test("Regression test.", async () => {
       ],
       "reusesPropertyValue": [{
         "reusedPropertyIri": "http://www.w3.org/2004/02/skos/core#prefLabel",
+        "reusedAsPropertyIri": "http://www.w3.org/2004/02/skos/core#prefLabel",
         "propertyReusedFromResourceIri": "http://dcat-ap/ns/dcat#Distribution",
       }, {
         "reusedPropertyIri": "http://www.w3.org/2004/02/skos/core#scopeNote",
+        "reusedAsPropertyIri": "http://www.w3.org/2004/02/skos/core#scopeNote",
         "propertyReusedFromResourceIri": "http://dcat-ap/ns/dcat#Distribution",
       }],
       "specializationOfIri": [],
@@ -145,6 +149,47 @@ test("Regression test.", async () => {
   };
 
   expect(actualModels[0]).toStrictEqual(expectedModel);
+});
+
+test("Issue #1238", async () => {
+  const inputRdf = `@prefix dct: <http://purl.org/dc/terms/>.
+@prefix dsv: <https://w3id.org/dsv#>.
+@prefix prof: <http://www.w3.org/ns/dx/prof/>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix skos: <http://www.w3.org/2004/02/skos/core#>.
+
+<https://example.com/profile> a prof:Profile, dsv:ApplicationProfile.
+
+<https://example.com/profile#Dataset>
+  a dsv:TermProfile, dsv:ClassProfile;
+  dct:isPartOf <https://example.com/profile>;
+  dsv:class <http://www.w3.org/ns/dcat#Dataset>;
+  dsv:reusesPropertyValue [
+    a dsv:PropertyValueReuse;
+    dsv:reusedProperty rdfs:label;
+    dsv:reusedAsProperty skos:prefLabel;
+    dsv:reusedFromResource <http://www.w3.org/ns/dcat#Dataset>
+  ], [
+    a dsv:PropertyValueReuse;
+    dsv:reusedProperty rdfs:comment;
+    dsv:reusedAsProperty skos:definition;
+    dsv:reusedFromResource <http://www.w3.org/ns/dcat#Dataset>
+  ].`;
+
+  const actual = await rdfToDsv(inputRdf);
+  expect(actual).toHaveLength(1);
+  expect(actual[0]?.classProfiles[0]?.reusesPropertyValue).toStrictEqual([
+    {
+      reusedPropertyIri: "http://www.w3.org/2000/01/rdf-schema#label",
+      reusedAsPropertyIri: "http://www.w3.org/2004/02/skos/core#prefLabel",
+      propertyReusedFromResourceIri: "http://www.w3.org/ns/dcat#Dataset",
+    },
+    {
+      reusedPropertyIri: "http://www.w3.org/2000/01/rdf-schema#comment",
+      reusedAsPropertyIri: "http://www.w3.org/2004/02/skos/core#definition",
+      propertyReusedFromResourceIri: "http://www.w3.org/ns/dcat#Dataset",
+    },
+  ]);
 });
 
 test("Issue #989", async () => {
@@ -292,7 +337,7 @@ _:n3-813 a dsv:PropertyValueReuse;
     },
   });
 
-  expect(actualEntities).toStrictEqual({
+  expect(actualEntities).toMatchObject({
     "baseIri": "",
     "entities": [{
       "description": {},

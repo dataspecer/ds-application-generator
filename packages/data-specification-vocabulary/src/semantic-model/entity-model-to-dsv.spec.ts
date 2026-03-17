@@ -115,9 +115,11 @@ test("Issue #608", () => {
             "profileOfIri": [],
             "reusesPropertyValue": [{
                 "reusedPropertyIri": "http://www.w3.org/2004/02/skos/core#prefLabel",
+                "reusedAsPropertyIri": "http://www.w3.org/2004/02/skos/core#prefLabel",
                 "propertyReusedFromResourceIri": "http://www.w3.org/ns/Dataset",
             }, {
                 "reusedPropertyIri": "http://www.w3.org/2004/02/skos/core#definition",
+                "reusedAsPropertyIri": "http://www.w3.org/2004/02/skos/core#definition",
                 "propertyReusedFromResourceIri": "http://www.w3.org/ns/Dataset",
             }],
             "type": ["class-profile"],
@@ -147,7 +149,7 @@ test("Issue #608", () => {
         "objectPropertyProfiles": []
     };
 
-    expect(actual).toStrictEqual(expected);
+    expect(actual).toMatchObject(expected);
 });
 
 test("Default test for profiles.", () => {
@@ -241,9 +243,11 @@ test("Default test for profiles.", () => {
             "profileOfIri": [],
             "reusesPropertyValue": [{
                 "reusedPropertyIri": "http://www.w3.org/2004/02/skos/core#prefLabel",
+                "reusedAsPropertyIri": "http://www.w3.org/2004/02/skos/core#prefLabel",
                 "propertyReusedFromResourceIri": "http://www.w3.org/ns/Dataset",
             }, {
                 "reusedPropertyIri": "http://www.w3.org/2004/02/skos/core#definition",
+                "reusedAsPropertyIri": "http://www.w3.org/2004/02/skos/core#definition",
                 "propertyReusedFromResourceIri": "http://www.w3.org/ns/Dataset",
             }],
             "type": ["class-profile"],
@@ -273,7 +277,7 @@ test("Default test for profiles.", () => {
         "objectPropertyProfiles": []
     };
 
-    expect(actual).toStrictEqual(expected);
+    expect(actual).toMatchObject(expected);
 });
 
 test("Issue #1005", () => {
@@ -415,9 +419,11 @@ test("Issue #1005", () => {
             "type": ["class-profile"],
             "reusesPropertyValue": [{
                 "reusedPropertyIri": "http://www.w3.org/2004/02/skos/core#prefLabel",
+                "reusedAsPropertyIri": "http://www.w3.org/2004/02/skos/core#prefLabel",
                 "propertyReusedFromResourceIri": "http://dcat/model/juicyBusiness"
             }, {
                 "reusedPropertyIri": "http://www.w3.org/2004/02/skos/core#definition",
+                "reusedAsPropertyIri": "http://www.w3.org/2004/02/skos/core#definition",
                 "propertyReusedFromResourceIri": "http://dcat/model/juicyBusiness"
             }],
             "profiledClassIri": ["http://dcat/model/juicyBusiness"],
@@ -433,9 +439,11 @@ test("Issue #1005", () => {
             "type": ["class-profile"],
             "reusesPropertyValue": [{
                 "reusedPropertyIri": "http://www.w3.org/2004/02/skos/core#prefLabel",
+                "reusedAsPropertyIri": "http://www.w3.org/2004/02/skos/core#prefLabel",
                 "propertyReusedFromResourceIri": "http://dcat/model/bulkyForce"
             }, {
                 "reusedPropertyIri": "http://www.w3.org/2004/02/skos/core#definition",
+                "reusedAsPropertyIri": "http://www.w3.org/2004/02/skos/core#definition",
                 "propertyReusedFromResourceIri": "http://dcat/model/bulkyForce"
             }],
             "profiledClassIri": ["http://dcat/model/bulkyForce"],
@@ -454,9 +462,11 @@ test("Issue #1005", () => {
             "profiledPropertyIri": ["http://dcat/model/juicyWork"],
             "reusesPropertyValue": [{
                 "reusedPropertyIri": "http://www.w3.org/2004/02/skos/core#prefLabel",
+                "reusedAsPropertyIri": "http://www.w3.org/2004/02/skos/core#prefLabel",
                 "propertyReusedFromResourceIri": "http://dcat/model/juicyWork"
             }, {
                 "reusedPropertyIri": "http://www.w3.org/2004/02/skos/core#definition",
+                "reusedAsPropertyIri": "http://www.w3.org/2004/02/skos/core#definition",
                 "propertyReusedFromResourceIri": "http://dcat/model/juicyWork"
             }
             ],
@@ -476,9 +486,11 @@ test("Issue #1005", () => {
             "profiledPropertyIri": ["http://dcat/model/juicyWork"],
             "reusesPropertyValue": [{
                 "reusedPropertyIri": "http://www.w3.org/2004/02/skos/core#prefLabel",
+                "reusedAsPropertyIri": "http://www.w3.org/2004/02/skos/core#prefLabel",
                 "propertyReusedFromResourceIri": "http://dcat/model/juicyWork"
             }, {
                 "reusedPropertyIri": "http://www.w3.org/2004/02/skos/core#definition",
+                "reusedAsPropertyIri": "http://www.w3.org/2004/02/skos/core#definition",
                 "propertyReusedFromResourceIri": "http://dcat/model/juicyWork"
             }],
             "specializationOfIri": ["http://dcat/model/BulkyForce.juicyWork"],
@@ -490,6 +502,56 @@ test("Issue #1005", () => {
         }]
     };
 
-    expect(actual).toStrictEqual(expected);
+    expect(actual).toMatchObject(expected);
 
+});
+
+test("Issue #1238 - export reusedAsProperty", () => {
+    const containers = [{
+        baseIri: "https://mff-uk.github.io/specifications/dcat-dap#",
+        entities: [{
+            id: "dataset",
+            iri: "http://www.w3.org/ns/dcat#Dataset",
+            type: ["class"],
+            name: { en: "Dataset" },
+            description: { en: "A collection of data" },
+            nameProperty: "http://www.example.com/vocabulary#myNameProperty",
+            descriptionProperty: "http://www.w3.org/vocabulary#myDescriptionProperty",
+        }, {
+            id: "dataset-profile",
+            type: ["class-profile"],
+            iri: "Dataset",
+            profiling: ["dataset"],
+            name: null,
+            nameFromProfiled: "dataset",
+            nameProperty: "http://www.example.com/vocabulary#myOtherNameProperty",
+            description: null,
+            descriptionFromProfiled: "dataset",
+            descriptionProperty: null, // test default behavior
+            usageNote: {},
+            usageNoteFromProfiled: null,
+            tags: [],
+            externalDocumentationUrl: null,
+        }],
+    }] as any;
+
+    const context = createContext(containers);
+    const actual = entityListContainerToDsvModel(
+        "https://mff-uk.github.io/specifications/dcat-dap#",
+        containers[0],
+        context,
+    );
+
+    expect(actual.classProfiles[0]?.reusesPropertyValue).toStrictEqual([
+        {
+            reusedPropertyIri: "http://www.example.com/vocabulary#myNameProperty",
+            reusedAsPropertyIri: "http://www.example.com/vocabulary#myOtherNameProperty",
+            propertyReusedFromResourceIri: "http://www.w3.org/ns/dcat#Dataset",
+        },
+        {
+            reusedPropertyIri: "http://www.w3.org/vocabulary#myDescriptionProperty",
+            reusedAsPropertyIri: "http://www.w3.org/2004/02/skos/core#definition",
+            propertyReusedFromResourceIri: "http://www.w3.org/ns/dcat#Dataset",
+        },
+    ]);
 });

@@ -13,7 +13,6 @@ import {
   TermProfile,
   RequirementLevel,
   ClassRole,
-  isClassProfile,
 } from "./dsv-model.ts";
 
 import {
@@ -23,7 +22,7 @@ import {
   SemanticModelRelationshipEndProfile,
   SemanticModelRelationshipProfile,
 } from "@dataspecer/core-v2/semantic-model/profile/concepts";
-import { DSV_CLASS_ROLE, DSV_MANDATORY_LEVEL, SKOS, VANN } from "./vocabulary.ts";
+import { DSV_CLASS_ROLE, DSV_MANDATORY_LEVEL, SKOS } from "./vocabulary.ts";
 import { SEMANTIC_MODEL_GENERALIZATION, SemanticModelGeneralization } from "@dataspecer/core-v2/semantic-model/concepts";
 
 interface MandatoryConceptualModelToEntityListContainerContext {
@@ -98,6 +97,32 @@ class ApplicationProfileToEntityModel {
 
   private context: ConceptualModelToEntityListContainerContext;
 
+  /**
+   * Properties that are used for usage note in dsv:reusedAsProperty. This is
+   * needed to properly map DSV property to corresponding
+   * name/description/usageNote property in the profile.
+   * @constant
+   */
+  usageNoteProperties = [SKOS.scopeNote.id];
+
+  /**
+   * Properties that are used for name in dsv:reusedAsProperty. This is
+   * needed to properly map DSV property to corresponding
+   * name/description/usageNote property in the profile.
+   * @constant
+   * @todo this should match the behavior of RDFS adapter what is what
+   */
+  nameProperties = [SKOS.prefLabel.id];
+
+  /**
+   * Properties that are used for description in dsv:reusedAsProperty. This is
+   * needed to properly map DSV property to corresponding
+   * name/description/usageNote property in the profile.
+   * @constant
+   * @todo this should match the behavior of RDFS adapter what is what
+   */
+  descriptionProperties = [SKOS.definition.id];
+
   constructor(context: ConceptualModelToEntityListContainerContext) {
     this.context = context;
   }
@@ -133,6 +158,10 @@ class ApplicationProfileToEntityModel {
         break;
     }
 
+    const usageNoteReuse = this.selectPropertyReuseByReusedAs(profile, this.usageNoteProperties);
+    const nameReuse = this.selectPropertyReuseByReusedAs(profile, this.nameProperties);
+    const descriptionReuse = this.selectPropertyReuseByReusedAs(profile, this.descriptionProperties);
+
     const classProfile: SemanticModelClassProfile = {
       // SemanticModelEntity
       iri: this.context.iriUpdate(profile.iri),
@@ -143,13 +172,15 @@ class ApplicationProfileToEntityModel {
       // Profile
       profiling,
       usageNote: profile.usageNote ?? {},
-      usageNoteFromProfiled: this.selectFromProfiled(profile, SKOS.scopeNote.id),
+      usageNoteFromProfiled: usageNoteReuse ? this.context.iriToIdentifier(usageNoteReuse.propertyReusedFromResourceIri) : null,
       externalDocumentationUrl: profile.externalDocumentationUrl,
       // NamedThingProfile
       name: profile.prefLabel ?? {},
-      nameFromProfiled: this.selectFromProfiled(profile, SKOS.prefLabel.id),
+      nameFromProfiled: nameReuse ? this.context.iriToIdentifier(nameReuse.propertyReusedFromResourceIri) : null,
+      nameProperty: nameReuse ? this.context.iriToIdentifier(nameReuse.reusedAsPropertyIri) : null,
       description: profile.definition ?? {},
-      descriptionFromProfiled: this.selectFromProfiled(profile, SKOS.definition.id),
+      descriptionFromProfiled: descriptionReuse ? this.context.iriToIdentifier(descriptionReuse.propertyReusedFromResourceIri) : null,
+      descriptionProperty: descriptionReuse ? this.context.iriToIdentifier(descriptionReuse.reusedAsPropertyIri) : null,
     };
     this.entities.push(classProfile);
     // Convert generalizations.
@@ -164,13 +195,15 @@ class ApplicationProfileToEntityModel {
     return items.map(iri => this.context.iriClassToIdentifier(iri));
   }
 
-  private selectFromProfiled(profile: {
+  private selectPropertyReuseByReusedAs(profile: {
     reusesPropertyValue: PropertyValueReuse[],
-  }, property: string): string | null {
-    const reusesPropertyValue = profile.reusesPropertyValue.find(
-      item => item.reusedPropertyIri === property);
-    const iri = reusesPropertyValue?.propertyReusedFromResourceIri ?? null;
-    return iri === null ? null : this.context.iriToIdentifier(iri);
+  }, properties: string[]): PropertyValueReuse | null {
+    const possibleCandidates = profile.reusesPropertyValue.filter(
+      item => properties.includes(item.reusedAsPropertyIri));
+    if (possibleCandidates.length > 1) {
+      console.warn(`Multiple candidates for property reuse found for profile. Using the first one.`, profile);
+    }
+    return possibleCandidates[0] ?? null;
   }
 
   private specializationOfToGeneralization(
@@ -225,8 +258,10 @@ class ApplicationProfileToEntityModel {
       // NamedThingProfile
       name: {},
       nameFromProfiled: null,
+      nameProperty: null,
       description: {},
       descriptionFromProfiled: null,
+      descriptionProperty: null,
       // Profile
       profiling: [],
       usageNote: {},
@@ -247,6 +282,9 @@ class ApplicationProfileToEntityModel {
         break;
     }
 
+    const nameReuse = this.selectPropertyReuseByReusedAs(profile, this.nameProperties);
+    const descriptionReuse = this.selectPropertyReuseByReusedAs(profile, this.descriptionProperties);
+
     const range: SemanticModelRelationshipEndProfile = {
       iri: this.context.iriUpdate(profile.iri),
       concept: rangeConcept,
@@ -256,9 +294,11 @@ class ApplicationProfileToEntityModel {
       name: profile.prefLabel ?? {},
       nameFromProfiled: this.selectFromPropertyProfiled(
         profile, SKOS.prefLabel.id, rangeConcept),
+      nameProperty: nameReuse ? this.context.iriToIdentifier(nameReuse.reusedAsPropertyIri) : null,
       description: profile.definition ?? {},
       descriptionFromProfiled: this.selectFromPropertyProfiled(
         profile, SKOS.definition.id, rangeConcept),
+      descriptionProperty: descriptionReuse ? this.context.iriToIdentifier(descriptionReuse.reusedAsPropertyIri) : null,
       // Profile
       profiling,
       usageNote: profile.usageNote ?? {},
@@ -288,7 +328,7 @@ class ApplicationProfileToEntityModel {
     reusesPropertyValue: PropertyValueReuse[],
   }, property: string, rangeConcept: string): string | null {
     const reusesPropertyValue = profile.reusesPropertyValue.find(
-      item => item.reusedPropertyIri === property);
+      item => (item.reusedAsPropertyIri ?? item.reusedPropertyIri) === property);
     const iri = reusesPropertyValue?.propertyReusedFromResourceIri ?? null;
     return iri === null ? null : this.context.iriPropertyToIdentifier(iri, rangeConcept);
   }
