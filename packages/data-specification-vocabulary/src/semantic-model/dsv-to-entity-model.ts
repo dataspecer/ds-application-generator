@@ -13,7 +13,6 @@ import {
   TermProfile,
   RequirementLevel,
   ClassRole,
-  isClassProfile,
 } from "./dsv-model.ts";
 
 import {
@@ -23,7 +22,7 @@ import {
   SemanticModelRelationshipEndProfile,
   SemanticModelRelationshipProfile,
 } from "@dataspecer/core-v2/semantic-model/profile/concepts";
-import { DSV_CLASS_ROLE, DSV_MANDATORY_LEVEL, SKOS, VANN } from "./vocabulary.ts";
+import { DSV_CLASS_ROLE, DSV_MANDATORY_LEVEL, SKOS } from "./vocabulary.ts";
 import { SEMANTIC_MODEL_GENERALIZATION, SemanticModelGeneralization } from "@dataspecer/core-v2/semantic-model/concepts";
 
 interface MandatoryConceptualModelToEntityListContainerContext {
@@ -99,19 +98,30 @@ class ApplicationProfileToEntityModel {
   private context: ConceptualModelToEntityListContainerContext;
 
   /**
-   * Properties that are used for usage note in dsv:reusedAsProperty.
+   * Properties that are used for usage note in dsv:reusedAsProperty. This is
+   * needed to properly map DSV property to corresponding
+   * name/description/usageNote property in the profile.
+   * @constant
    */
-  USAGE_NOTE_PROPERTIES = [SKOS.scopeNote.id];
+  usageNoteProperties = [SKOS.scopeNote.id];
 
   /**
-   * Properties that are used for name in dsv:reusedAsProperty.
+   * Properties that are used for name in dsv:reusedAsProperty. This is
+   * needed to properly map DSV property to corresponding
+   * name/description/usageNote property in the profile.
+   * @constant
+   * @todo this should match the behavior of RDFS adapter what is what
    */
-  NAME_PROPERTIES = [SKOS.prefLabel.id];
+  nameProperties = [SKOS.prefLabel.id];
 
   /**
-   * Properties that are used for description in dsv:reusedAsProperty.
+   * Properties that are used for description in dsv:reusedAsProperty. This is
+   * needed to properly map DSV property to corresponding
+   * name/description/usageNote property in the profile.
+   * @constant
+   * @todo this should match the behavior of RDFS adapter what is what
    */
-  DESCRIPTION_PROPERTIES = [SKOS.definition.id];
+  descriptionProperties = [SKOS.definition.id];
 
   constructor(context: ConceptualModelToEntityListContainerContext) {
     this.context = context;
@@ -148,9 +158,9 @@ class ApplicationProfileToEntityModel {
         break;
     }
 
-    const usageNoteReuse = this.selectPropertyReuseByReusedAs(profile, this.USAGE_NOTE_PROPERTIES);
-    const nameReuse = this.selectPropertyReuseByReusedAs(profile, this.NAME_PROPERTIES);
-    const descriptionReuse = this.selectPropertyReuseByReusedAs(profile, this.DESCRIPTION_PROPERTIES);
+    const usageNoteReuse = this.selectPropertyReuseByReusedAs(profile, this.usageNoteProperties);
+    const nameReuse = this.selectPropertyReuseByReusedAs(profile, this.nameProperties);
+    const descriptionReuse = this.selectPropertyReuseByReusedAs(profile, this.descriptionProperties);
 
     const classProfile: SemanticModelClassProfile = {
       // SemanticModelEntity
@@ -272,9 +282,8 @@ class ApplicationProfileToEntityModel {
         break;
     }
 
-    const usageNoteReuse = this.selectPropertyReuseByReusedAs(profile, this.USAGE_NOTE_PROPERTIES);
-    const nameReuse = this.selectPropertyReuseByReusedAs(profile, this.NAME_PROPERTIES);
-    const descriptionReuse = this.selectPropertyReuseByReusedAs(profile, this.DESCRIPTION_PROPERTIES);
+    const nameReuse = this.selectPropertyReuseByReusedAs(profile, this.nameProperties);
+    const descriptionReuse = this.selectPropertyReuseByReusedAs(profile, this.descriptionProperties);
 
     const range: SemanticModelRelationshipEndProfile = {
       iri: this.context.iriUpdate(profile.iri),

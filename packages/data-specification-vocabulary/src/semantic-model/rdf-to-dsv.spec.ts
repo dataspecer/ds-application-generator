@@ -151,7 +151,7 @@ test("Regression test.", async () => {
   expect(actualModels[0]).toStrictEqual(expectedModel);
 });
 
-test("Issue #1238 - parse reusedAsProperty", async () => {
+test("Issue #1238", async () => {
   const inputRdf = `@prefix dct: <http://purl.org/dc/terms/>.
 @prefix dsv: <https://w3id.org/dsv#>.
 @prefix prof: <http://www.w3.org/ns/dx/prof/>.

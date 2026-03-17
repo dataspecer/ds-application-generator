@@ -324,9 +324,10 @@ function loadReusesPropertyValue(
     reusedProperty = SKOS.scopeNote.id;
   }
   if (reusedAsProperty === null) {
-    // We will treat missing reusedAsProperty as reuse of the same property
-    // But it can be considered as default behavior if you omit dsv:reusedAsProperty.
+    // For backwards compatibility we will treat missing reusedAsProperty as reuse of the same property.
     // https://github.com/dataspecer/dataspecer/issues/1238
+    //
+    // todo: Not sure whether this property is actually mandatory in DSV. If not, then this logic should be kept.
     reusedAsProperty = reusedProperty;
   }
   const reusedFrom = reader.iri(DSV.reusedFromResource);

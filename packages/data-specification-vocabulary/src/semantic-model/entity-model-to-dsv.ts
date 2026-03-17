@@ -56,9 +56,14 @@ interface EntityListContainerToDsvContext {
   languageFilter: (value: LanguageString | null | undefined) => LanguageString | null;
 
   /**
-   * Returns property that the given entity uses for name, description, or usage note.
+   * Returns property that the given entity uses for name.
    */
-  getPropertyFor: (entityIdentifier: string, type: "name" | "description" | "usageNote") => string | null;
+  getPropertyForName: (entityIdentifier: string) => string | null;
+
+  /**
+   * Returns property that the given entity uses for description.
+   */
+  getPropertyForDescription: (entityIdentifier: string) => string | null;
 }
 
 /**
@@ -113,10 +118,7 @@ export function createContext(
     }
   };
 
-  const getPropertyFor = (
-    entityIdentifier: string,
-    type: "name" | "description" | "usageNote",
-  ) => {
+  const getPropertyForName = (entityIdentifier: string): string | null => {
     const entity = identifierToEntity(entityIdentifier);
     if (!entity) {
       return null;
@@ -134,18 +136,31 @@ export function createContext(
     }
 
     if (prop) {
-      if (type === "name") {
-        return prop.nameProperty ?? null;
-      }
-      if (type === "description") {
-        return prop.descriptionProperty ?? null;
-      }
-      if (type === "usageNote") {
-        return SKOS.scopeNote.id;
-      }
+      return prop.nameProperty ?? null;
+    }
 
-      (type satisfies never);
+    return null;
+  };
+
+  const getPropertyForDescription = (entityIdentifier: string): string | null => {
+    const entity = identifierToEntity(entityIdentifier);
+    if (!entity) {
       return null;
+    }
+
+    let prop: NamedThing | NamedThingProfile | null = null;
+
+    if (isSemanticModelClass(entity) || isSemanticModelClassProfile(entity)) {
+      prop = entity;
+    }
+
+    if (isSemanticModelRelationship(entity) || isSemanticModelRelationshipProfile(entity)) {
+      const [_, range] = entity.ends;
+      prop = range;
+    }
+
+    if (prop) {
+      return prop.descriptionProperty ?? null;
     }
 
     return null;
@@ -158,7 +173,8 @@ export function createContext(
     identifierToEntity,
     entityToIri,
     languageFilter,
-    getPropertyFor,
+    getPropertyForName,
+    getPropertyForDescription,
   };
 }
 
@@ -339,7 +355,7 @@ class EntityListContainerToDsv {
     if (item.nameFromProfiled === null) {
       profile.prefLabel = this.prepareString(item.name);
     } else {
-      const reusedPropertyIri = this.context.getPropertyFor(item.nameFromProfiled, "name") ?? SKOS.prefLabel.id;
+      const reusedPropertyIri = this.context.getPropertyForName(item.nameFromProfiled) ?? SKOS.prefLabel.id;
       const reusedAsPropertyIri = item.nameProperty ?? SKOS.prefLabel.id; // Currently hard-coded default value
       profile.reusesPropertyValue.push({
         reusedPropertyIri,
@@ -350,7 +366,7 @@ class EntityListContainerToDsv {
     if (item.descriptionFromProfiled === null) {
       profile.definition = this.prepareString(item.description);
     } else {
-      const reusedPropertyIri = this.context.getPropertyFor(item.descriptionFromProfiled, "description") ?? SKOS.definition.id;
+      const reusedPropertyIri = this.context.getPropertyForDescription(item.descriptionFromProfiled) ?? SKOS.definition.id;
       const reusedAsPropertyIri = item.descriptionProperty ?? SKOS.definition.id; // Currently hard-coded default value
       profile.reusesPropertyValue.push({
         reusedPropertyIri,
